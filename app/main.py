@@ -35,7 +35,7 @@ def add_user(user: User):
     
 #Update existing user
 @app.put("/api/users/update/{user_id}")
-def edit_user(user_id: int, edited_user: User): # user id from URL and user object from body 
+def edit_user(user_id: int, edited_user: User): # user id from URL and user object from payload
     for i, u in enumerate(users): # checks list of users 
         if u.user_id == user_id: # match ids
             users[i] = edited_user # replace the old user with the new one
@@ -43,6 +43,15 @@ def edit_user(user_id: int, edited_user: User): # user id from URL and user obje
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found") #404 if user doesnt exist 
 
 
+#Delete existing user
+@app.delete("/api/users/delete/{user_id}", status_code=status.HTTP_204_NO_CONTENT) #if endpoint succeeds return status code 
+def delete_user(user_id: int): # user ID from URL
+    for u in users: # checks list 
+        if u.user_id == user_id: # match ids 
+            users.remove(u) # remove user
+            return # exits function - this will then return 204 if successful 
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found") #404 if user doesnt exist 
+                
 
 
     
