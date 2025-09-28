@@ -19,7 +19,7 @@ def get_users():
 @app.get("/api/users/{user_id}")
 def get_user(user_id: int):
     for u in users:
-        if u in users:
+        if u in users: 
             if u.user_id == user_id:
                 return u
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -53,6 +53,9 @@ def delete_user(user_id: int): # user ID from URL
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found") #404 if user doesnt exist 
                 
 
-
+#Health endpoint
+@app.get("/api/health", status_code=status.HTTP_200_OK)
+def health():
+    return ("OK")
     
         
