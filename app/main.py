@@ -56,6 +56,6 @@ def delete_user(user_id: int): # user ID from URL
 #Health endpoint
 @app.get("/api/health", status_code=status.HTTP_200_OK)
 def health():
-    return ("OK")
+    return "OK"
     
         
