@@ -1,6 +1,7 @@
-Lab 1 
+Lab 2
 
-•	Set up a clean FastAPI project with a predictable package layout.
-•	Define a simple Pydantic v2 model and minimal CRUD endpoints.
-•	Run locally with Uvicorn and explore the auto-generated Swagger UI.
-•	Containerise with Gunicorn/Uvicorn and add a minimal CI workflow.
+• Clone last week’s repo and work on a new feature branch.
+• Write your first pytest tests and run them locally.
+• See test coverage and understand 422/201/404 status codes.
+• Run tests in GitHub Actions on every push/PR.
+
