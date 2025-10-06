@@ -51,3 +51,8 @@ def test_update_user(client):
     r = client.get("/api/users/5") # get updated user
     data = r.json()
     assert data["name"] == "Conor"
+
+def test_update_user_404(client):
+    r = client.put("/api/users/update/999", json=user_payload(user_id=999)) # update non-existent user
+    assert r.status_code == 404
+    assert r.json()["detail"] == "user not found"
