@@ -1,61 +1,49 @@
 # app/main.py
 
-from fastapi import FastAPI, HTTPException, status
-from .schemas import User
+from fastapi import FastAPI, HTTPException, status, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from .database import SessionLocal, engine
+from .schemas import UserCreate, UserRead
+from .models import Base, UserDB
 
 app = FastAPI()
-users: list[User] = []
+Base.metadata.create_all(bind=engine)
 
-@app.get("/hello")
-def hello():
-    return {"message": "Hello, World!"}
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 #Get all users
-@app.get("/api/users")
-def get_users():
-    return users
+@app.get("/api/users", response_model=list[UserRead])
+
+def list_users(db: Session = Depends(get_db)):
+    stmt = select(UserDB).order_by(UserDB.id)
+    return list(db.execute(stmt).scalars())
 
 #Get user by id
-@app.get("/api/users/{user_id}")
-def get_user(user_id: int):
-    for u in users:
-        if u in users: 
-            if u.user_id == user_id:
-                return u
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+@app.get("/api/users/{user_id}", response_model=UserRead)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.get(UserDB, user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return user
 
 #Create user
 @app.post("/api/users", status_code=status.HTTP_201_CREATED)
-def add_user(user: User):
-    #Check if user already exists 
-    if any(u.user_id == user.user_id for u in users):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="user_id already exists")
-    users.append(user) #append means to add to list
+def add_user(payload: UserCreate, db: Session = Depends(get_db)):
+    user = UserDB(**payload.model_dump())
+    db.add(user)
+    try:
+        db.commit()
+        db.refresh(user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
     return user
     
-#Update existing user
-@app.put("/api/users/update/{user_id}")
-def edit_user(user_id: int, edited_user: User): # user id from URL and user object from payload
-    for i, u in enumerate(users): # checks list of users 
-        if u.user_id == user_id: # match ids
-            users[i] = edited_user # replace the old user with the new one
-            return edited_user 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found") #404 if user doesnt exist 
-
-
-#Delete existing user
-@app.delete("/api/users/delete/{user_id}", status_code=status.HTTP_204_NO_CONTENT) #if endpoint succeeds return status code 
-def delete_user(user_id: int): # user ID from URL
-    for u in users: # checks list 
-        if u.user_id == user_id: # match ids 
-            users.remove(u) # remove user
-            return # exits function - this will then return 204 if successful 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found") #404 if user doesnt exist 
-                
-
-#Health endpoint
-@app.get("/api/health", status_code=status.HTTP_200_OK)
-def health():
-    return "OK"
-    
-        
