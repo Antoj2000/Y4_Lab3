@@ -1,0 +1,6 @@
+INFO:     Will watch for changes in these directories: ['C:\\Users\\johns\\OneDrive - Atlantic TU\\CICD3\\Labs\\Y4_Lab3']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [20172] using StatReload
+INFO:     Started server process [29252]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

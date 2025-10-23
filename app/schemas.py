@@ -18,5 +18,5 @@ class UserRead(BaseModel):
     name: NameStr
     email: EmailStr
     age: int
-
+ 
     model_config = ConfigDict(from_attributes=True)
