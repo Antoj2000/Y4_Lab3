@@ -36,4 +36,5 @@ def test_create_user(client):
                         "age": 24
                     })
     assert r.status_code == 201
+
                     
