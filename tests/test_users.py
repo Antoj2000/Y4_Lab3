@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
+from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker
 from app.main import app, get_db
 from app.models import Base
@@ -9,7 +10,7 @@ from app.models import Base
 # run python -m pytest
 
 TEST_DB_URL = "sqlite+pysqlite:///:memory:"
-engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": False})
+engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": False}, poolclass=StaticPool)
 TestingSessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 Base.metadata.create_all(bind=engine)
 
@@ -30,10 +31,10 @@ def client():
 def test_create_user(client):
     r = client.post("/api/users", 
                     json = {
-                        "student_id": "S1234567",
                         "name": "Anthony",
                         "email": "anto@atu.ie",
-                        "age": 24
+                        "age": 24,
+                        "student_id": "S1234567",
                     })
     assert r.status_code == 201
 
