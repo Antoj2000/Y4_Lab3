@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+
 from .database import SessionLocal, engine
 from .schemas import UserCreate, UserRead
 from .models import Base, UserDB
@@ -30,9 +31,9 @@ def list_users(db: Session = Depends(get_db)):
     return list(db.execute(stmt).scalars())
 
 #Get user by id
-@app.get("/api/users/{user_id}", response_model=UserRead)
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.get(UserDB, user_id)
+@app.get("/api/users/{id}", response_model=UserRead)
+def get_user(id: int, db: Session = Depends(get_db)):
+    user = db.get(UserDB, id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
@@ -52,9 +53,9 @@ def add_user(payload: UserCreate, db: Session = Depends(get_db)):
     return user
 
 # Update User
-@app.put("/api/users/update/{user_id}", response_model=UserRead)
-def update_user(user_id: int, payload: UserCreate, db: Session = Depends(get_db)):
-    user = db.get(UserDB, user_id)
+@app.put("/api/users/update/{id}", response_model=UserRead)
+def update_user(id: int, payload: UserCreate, db: Session = Depends(get_db)):
+    user = db.get(UserDB, id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     for key, value in payload.model_dump().items():
@@ -69,9 +70,9 @@ def update_user(user_id: int, payload: UserCreate, db: Session = Depends(get_db)
     
 
 #Delete User
-@app.delete("/api/users/delete/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.get(UserDB, user_id)
+@app.delete("/api/users/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(id: int, db: Session = Depends(get_db)):
+    user = db.get(UserDB, id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     db.delete(user)

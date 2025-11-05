@@ -7,16 +7,17 @@ StudentID = Annotated[str, constr(pattern=r'^S\d{7}$')]
 
 class UserCreate(BaseModel):
     
-    student_id: StudentID # used pattern instead of regex as python v2 no longer uses regex
+   
     name: NameStr
     email: EmailStr
     age: int = Field(gt=18)
+    student_id: StudentID
 
 class UserRead(BaseModel):
     id: int
-    student_id: StudentID
     name: NameStr
     email: EmailStr
     age: int
+    student_id: StudentID
  
     model_config = ConfigDict(from_attributes=True)
